@@ -8,3 +8,4 @@ test_model.py
 prepare_data.py
 __pycache__
 config.toml
+.devcontainer/
