@@ -9,3 +9,4 @@ prepare_data.py
 __pycache__
 config.toml
 .devcontainer/
+nba_mobile/

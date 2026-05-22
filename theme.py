@@ -52,6 +52,32 @@ def inject_premium_dark_theme():
                 box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
             }
             
+            /* --- CORRECTION : Centrage du bouton de calcul (Desktop + Mobile) --- */
+            .stApp div[data-testid="stElementContainer"].st-key-calc_btn {
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+            .stApp div[data-testid="stElementContainer"].st-key-calc_btn .stButton {
+                width: auto !important;
+                min-width: 320px !important;
+            }
+            
+            /* --- CORRECTION : Centrage complet de st.metric (Titres + Valeurs) --- */
+            .stApp div[data-testid="stMetric"], .stApp div[data-testid="metric"] {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: center !important;
+                text-align: center !important;
+                width: 100% !important;
+            }
+            .stApp div[data-testid="stMetric"] div[data-testid="stMetricLabel"],
+            .stApp div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+                display: flex !important;
+                justify-content: center !important;
+                width: 100% !important;
+            }
+            
             .app-header {
                 border-bottom: 1px solid rgba(255, 255, 255, 0.08);
                 padding-bottom: 12px;
@@ -94,8 +120,7 @@ def inject_premium_dark_theme():
                 font-weight: 600;
             }
             
-            /* --- NOUVEAU CONTENEUR DE MATCH GRID --- */
-            .mini-card {
+            .mini-card-btn {
                 background-color: #111113;
                 border: 1px solid rgba(255, 255, 255, 0.08);
                 border-radius: 12px;
@@ -104,6 +129,14 @@ def inject_premium_dark_theme():
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
+                width: 100%;
+                cursor: pointer;
+                transition: transform 0.15s ease, border-color 0.15s ease;
+                outline: none;
+            }
+            .mini-card-btn:hover {
+                transform: scale(1.02);
+                border-color: rgba(249, 115, 22, 0.4);
             }
             .mini-team-bloc {
                 display: flex;
@@ -133,6 +166,16 @@ def inject_premium_dark_theme():
                 padding: 4px 8px;
                 border-radius: 6px;
                 border: 1px solid rgba(249, 115, 22, 0.15);
+            }
+            
+            .comparison-container {
+                display: flex;
+                gap: 16px;
+                width: 100%;
+            }
+            .comparison-container .ui-card {
+                flex: 1;
+                width: 50%;
             }
             
             .metric-row {
@@ -182,6 +225,87 @@ def inject_premium_dark_theme():
                 margin: 6px 0 0 0;
                 font-size: 14px;
                 color: rgba(255, 255, 255, 0.8);
+            }
+
+            @media (max-width: 768px) {
+                .stApp, .app-header, .stMarkdown, .stSubheader, .stTitle, h1, h2, h3, p, label {
+                    text-align: center !important;
+                }
+                
+                /* Ne s'applique pas au bloc contenant les cotes d'équipes */
+                div[data-testid="stHorizontalBlock"]:not(:has(.st-key-home_odds)) {
+                    flex-direction: column !important;
+                    gap: 16px !important;
+                }
+                div[data-testid="column"]:not(:has(.st-key-home_odds) div[data-testid="column"]),
+                div[data-testid="stColumn"]:not(:has(.st-key-home_odds) div[data-testid="stColumn"]) {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                    flex-basis: 100% !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    align-items: center !important;
+                    text-align: center !important;
+                }
+                
+                /* --- CORRECTION SUCCÈS : Force le maintien côte à côte de la ligne d'inputs --- */
+                .stApp div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) {
+                    display: flex !important;
+                    flex-direction: row !important;
+                    flex-wrap: nowrap !important;
+                    gap: 12px !important;
+                    width: 100% !important;
+                }
+                
+                .stApp div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) div[data-testid="stColumn"],
+                .stApp div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) div[data-testid="column"] {
+                    width: 50% !important;
+                    flex-basis: 50% !important;
+                    max-width: 50% !important;
+                    min-width: 0 !important;
+                    display: block !important;
+                }
+                
+                div[data-testid="stSelectbox"], div[data-testid="stNumberInput"], div[data-testid="stSlider"], .stButton {
+                    width: 100% !important;
+                    max-width: 100% !important;
+                }
+                div[data-testid="stWidgetLabel"] {
+                    text-align: center !important;
+                    width: 100% !important;
+                }
+                
+                .comparison-container {
+                    gap: 8px;
+                }
+                .comparison-container .ui-card {
+                    padding: 12px 6px;
+                }
+                .comparison-container .team-logo {
+                    width: 50px;
+                    height: 50px;
+                    margin-bottom: 8px;
+                }
+                .comparison-container .team-title {
+                    font-size: 13px !important;
+                }
+                .comparison-container .team-subtitle {
+                    font-size: 11px;
+                    margin-bottom: 12px;
+                }
+                .comparison-container .metric-row {
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 2px;
+                    padding: 6px 0;
+                    font-size: 11px;
+                }
+                
+                .mini-card-btn {
+                    width: 100% !important;
+                    max-width: 400px;
+                    margin: 0 auto 12px auto !important;
+                }
             }
         </style>
     """, unsafe_allow_html=True)

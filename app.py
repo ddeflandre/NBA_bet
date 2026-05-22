@@ -1,5 +1,7 @@
 import pandas as pd
 import streamlit as st
+import streamlit.components.v1 as components
+import time
 from theme import inject_premium_dark_theme
 from data_provider import (
     load_prediction_resources,
@@ -24,6 +26,37 @@ if "selected_home" not in st.session_state:
     st.session_state.selected_home = all_teams[0]
 if "selected_away" not in st.session_state:
     st.session_state.selected_away = all_teams[1]
+if "scroll_trigger" not in st.session_state:
+    st.session_state.scroll_trigger = False
+
+if "load_match" in st.query_params:
+    match_param = st.query_params["load_match"]
+    st.markdown("""
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 70vh;">
+            <div style="border: 4px solid rgba(255, 255, 255, 0.1); border-top: 4px solid #f97316; border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 24px;"></div>
+            <h3 style="color: #ffffff; font-weight: 700; font-size: 18px; letter-spacing: 0.05em; text-transform: uppercase; margin: 0 0 8px 0;">Analyse de la rencontre en cours</h3>
+            <p style="color: rgba(255, 255, 255, 0.5); font-size: 14px; margin: 0;">Alignement des fonctionnalités et mise à jour des cotes...</p>
+        </div>
+        <style>
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        </style>
+    """, unsafe_allow_html=True)
+    
+    try:
+        mh, mv = match_param.split("|")
+        if mh in all_teams and mv in all_teams:
+            st.session_state.selected_home = mh
+            st.session_state.selected_away = mv
+            st.session_state.scroll_trigger = True
+    except ValueError:
+        pass
+        
+    time.sleep(0.5)
+    st.query_params.clear()
+    st.rerun()
 
 st.sidebar.markdown("""
     <div style="margin-bottom: 20px;">
@@ -39,12 +72,11 @@ kelly_fraction = st.sidebar.slider("Fraction de Kelly", min_value=0.1, max_value
 
 st.markdown("""
     <div class="app-header">
-        <h1 class="app-title">COURTSIDE AI</h1>
+        <h1 class="app-title">NBA - Predict</h1>
     </div>
 """, unsafe_allow_html=True)
 
-# --- CONFIGURATION EN GRILLE DE 3 MAXIMUM PAR LIGNE ---
-st.subheader("📅 Prochaines Rencontres NBA (API)")
+st.subheader("📅 Prochaines rencontres")
 upcoming_matches = fetch_upcoming_games()
 
 if upcoming_matches:
@@ -54,7 +86,6 @@ if upcoming_matches:
         cols_cards = st.columns(3)
         
         for idx, g in enumerate(match_chunk):
-            absolute_idx = i + idx
             h_info = g.get("home_team", {})
             v_info = g.get("visitor_team", {})
             h_name = h_info.get("full_name", h_info.get("name", "Unknown"))
@@ -70,31 +101,50 @@ if upcoming_matches:
             logo_v_url = f"https://cdn.nba.com/logos/nba/{int(features_v['teamId'])}/global/L/logo.svg" if features_v else ""
             
             with cols_cards[idx]:
-                st.markdown(f"""
-                    <div class="mini-card">
-                        <div class="mini-team-bloc">
-                            <img src="{logo_h_url}" class="mini-logo">
-                            <div class="mini-team-text">{features_h['teamAbbreviation'] if features_h else h_name[:3].upper()}</div>
+                if matched_h and matched_v:
+                    st.markdown(f"""
+                        <form action="" method="get">
+                            <button class="mini-card-btn" type="submit" name="load_match" value="{matched_h}|{matched_v}">
+                                <div class="mini-team-bloc">
+                                    <img src="{logo_h_url}" class="mini-logo">
+                                    <div class="mini-team-text">{features_h['teamAbbreviation'] if features_h else h_name[:3].upper()}</div>
+                                </div>
+                                <div class="mini-vs-badge">VS</div>
+                                <div class="mini-team-bloc">
+                                    <img src="{logo_v_url}" class="mini-logo">
+                                    <div class="mini-team-text">{features_v['teamAbbreviation'] if features_v else v_name[:3].upper()}</div>
+                                </div>
+                            </button>
+                        </form>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                        <div class="mini-card-btn" style="opacity: 0.5; cursor: not-allowed;">
+                            <div class="mini-team-bloc"><div class="mini-team-text">{h_name[:3].upper()}</div></div>
+                            <div class="mini-vs-badge">VS</div>
+                            <div class="mini-team-bloc"><div class="mini-team-text">{v_name[:3].upper()}</div></div>
                         </div>
-                        <div class="mini-vs-badge">VS</div>
-                        <div class="mini-team-bloc">
-                            <img src="{logo_v_url}" class="mini-logo">
-                            <div class="mini-team-text">{features_v['teamAbbreviation'] if features_v else v_name[:3].upper()}</div>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
-                
-                if st.button("Analyser la rencontre", key=f"btn_match_{absolute_idx}"):
-                    if matched_h and matched_v:
-                        st.session_state.selected_home = matched_h
-                        st.session_state.selected_away = matched_v
-                        st.rerun()
+                    """, unsafe_allow_html=True)
 else:
     st.info("Aucun match planifié disponible sur le flux API actuel.")
 
 st.markdown("<br><hr style='border-color:rgba(255,255,255,0.08);'><br>", unsafe_allow_html=True)
 
-st.subheader("⚔️ Configuration Personnalisée & Cotes")
+st.markdown('<div id="focus-odds-section"></div>', unsafe_allow_html=True)
+
+if st.session_state.scroll_trigger:
+    components.html("""
+        <script>
+            window.parent.document.getElementById("focus-odds-section")?.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        </script>
+    """, height=0)
+    st.session_state.scroll_trigger = False
+
+st.subheader("⚔️ Equipes & Cotes")
+
 c1, c2 = st.columns(2)
 with c1:
     default_home_idx = all_teams.index(st.session_state.selected_home) if st.session_state.selected_home in all_teams else 0
@@ -114,10 +164,9 @@ away_raw = get_team_features(team_data, stats_list, away_team)
 
 if home_raw and away_raw:
     st.markdown("<br>", unsafe_allow_html=True)
-    p_col1, p_col2 = st.columns(2)
     
-    with p_col1:
-        st.markdown(f"""
+    st.markdown(f"""
+        <div class="comparison-container">
             <div class="ui-card">
                 <img src="https://cdn.nba.com/logos/nba/{int(home_raw['teamId'])}/global/L/logo.svg" class="team-logo">
                 <h3 class="team-title">{home_team}</h3>
@@ -127,10 +176,6 @@ if home_raw and away_raw:
                 <div class="metric-row"><span class="label-muted">Net Rating</span><span class="value-highlight">{home_raw['netRating_rolling_5']:.1f}</span></div>
                 <div class="metric-row"><span class="label-muted">Pace (Rythme)</span><span class="value-highlight">{home_raw['pace_rolling_5']:.1f}</span></div>
             </div>
-        """, unsafe_allow_html=True)
-        
-    with p_col2:
-        st.markdown(f"""
             <div class="ui-card">
                 <img src="https://cdn.nba.com/logos/nba/{int(away_raw['teamId'])}/global/L/logo.svg" class="team-logo">
                 <h3 class="team-title">{away_team}</h3>
@@ -140,11 +185,12 @@ if home_raw and away_raw:
                 <div class="metric-row"><span class="label-muted">Net Rating</span><span class="value-highlight">{away_raw['netRating_rolling_5']:.1f}</span></div>
                 <div class="metric-row"><span class="label-muted">Pace (Rythme)</span><span class="value-highlight">{away_raw['pace_rolling_5']:.1f}</span></div>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+    """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
     
-    if st.button("Calculer l'avantage mathématique"):
+    if st.button("Voir le pronostique", key="calc_btn"):
         today = pd.Timestamp.now()
         home_rest = (today - home_raw['last_game_date']).days
         away_rest = (today - away_raw['last_game_date']).days
@@ -177,7 +223,7 @@ if home_raw and away_raw:
         ev_home = (prob_home_reg * (odds_home - 1.0)) - (1.0 - prob_home_reg)
         ev_away = (prob_away_reg * (odds_away - 1.0)) - (1.0 - prob_away_reg)
         
-        st.subheader("📊 Distribution des Probabilités")
+        st.subheader("📊 Probabilités victoire")
         res_c1, res_c2, res_c3 = st.columns(3)
         res_c1.metric(label=f"Victoire {home_team}", value=f"{prob_home_reg * 100:.1f}%")
         res_c2.metric(label="Match Nul (48 min)", value=f"{prob_draw * 100:.1f}%")
@@ -216,7 +262,7 @@ if home_raw and away_raw:
             st.markdown("""
                 <div class="signal-panel signal-neutral">
                     <h3 class="panel-title">⚠️ Absence d'Écart de Valeur</h3>
-                    <p class="panel-desc">Les probabilités de l'IA sont absorbées par le spread du bookmaker. Aucun trade recommandé sur ce match.</p>
+                    <p class="panel-desc">Aucun trade recommandé sur ce match, tu risques de perdre plus d'argent que d'en gagner</p>
                 </div>
             """, unsafe_allow_html=True)
 else:
