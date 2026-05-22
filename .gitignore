@@ -7,4 +7,4 @@ test_model.py
 .idea/
 prepare_data.py
 __pycache__
-.streamlit/
+config.toml
