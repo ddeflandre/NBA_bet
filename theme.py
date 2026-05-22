@@ -5,74 +5,77 @@ def inject_premium_dark_theme():
         <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
         <style>
-            .stApp {
+            /* Utilisation de sélecteurs ultra-spécifiques pour écraser le cache du Cloud */
+            html body .stApp {
                 background-color: #09090b !important;
                 color: #ffffff !important;
                 font-family: 'Inter', sans-serif;
             }
             
-            [data-testid="stSidebar"] {
+            html body [data-testid="stSidebar"] {
                 background-color: #09090b !important;
                 border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
             }
             
-            [data-testid="stWidgetLabel"] p, 
-            [data-testid="stWidgetLabel"], 
-            label, 
-            .stSelectbox p, 
-            .stNumberInput p, 
-            .stSlider p,
-            div[data-testid="stMarkdownContainer"] p {
+            html body [data-testid="stWidgetLabel"] p, 
+            html body [data-testid="stWidgetLabel"], 
+            html body label, 
+            html body .stSelectbox p, 
+            html body .stNumberInput p, 
+            html body .stSlider p,
+            html body div[data-testid="stMarkdownContainer"] p {
                 color: #ffffff !important;
                 font-weight: 500 !important;
             }
             
-            .stNumberInput input, .stSelectbox select, .stSlider div {
+            html body .stNumberInput input, html body .stSelectbox select, html body .stSlider div {
                 background-color: #18181b !important;
                 color: #ffffff !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 border-radius: 6px !important;
             }
             
-            .stButton>button { 
-                width: 100%; 
-                border-radius: 8px; 
-                height: 3.5em; 
-                font-weight: 700; 
+            html body .stButton>button { 
+                width: 100% !important; 
+                border-radius: 8px !important; 
+                height: 3.5em !important; 
+                font-weight: 700 !important; 
                 background: linear-gradient(135deg, #f97316 0%, #ea580c 100%) !important;
                 color: #ffffff !important; 
                 border: none !important;
-                box-shadow: 0 4px 14px rgba(249, 115, 22, 0.2);
-                transition: all 0.2s ease;
-                text-transform: uppercase;
-                letter-spacing: 0.05em;
+                box-shadow: 0 4px 14px rgba(249, 115, 22, 0.2) !important;
+                transition: all 0.2s ease !important;
+                text-transform: uppercase !important;
+                letter-spacing: 0.05em !important;
             }
-            .stButton>button:hover {
-                transform: translateY(-1px);
-                box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+            html body .stButton>button:hover {
+                transform: translateY(-1px) !important;
+                box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35) !important;
             }
             
-            /* --- CORRECTION : Centrage du bouton de calcul (Desktop + Mobile) --- */
-            .stApp div[data-testid="stElementContainer"].st-key-calc_btn {
+            /* --- CENTRAGE DU BOUTON SUR LE CLOUD --- */
+            html body div[data-testid="stElementContainer"]:has(.st-key-calc_btn),
+            html body div[data-testid="stElementContainer"].st-key-calc_btn {
                 display: flex !important;
                 justify-content: center !important;
                 width: 100% !important;
             }
-            .stApp div[data-testid="stElementContainer"].st-key-calc_btn .stButton {
+            html body div[data-testid="stElementContainer"]:has(.st-key-calc_btn) .stButton,
+            html body div[data-testid="stElementContainer"].st-key-calc_btn .stButton {
                 width: auto !important;
                 min-width: 320px !important;
             }
             
-            /* --- CORRECTION : Centrage complet de st.metric (Titres + Valeurs) --- */
-            .stApp div[data-testid="stMetric"], .stApp div[data-testid="metric"] {
+            /* --- CENTRAGE DES METRICS SUR LE CLOUD --- */
+            html body div[data-testid="stMetric"], html body div[data-testid="metric"] {
                 display: flex !important;
                 flex-direction: column !important;
                 align-items: center !important;
                 text-align: center !important;
                 width: 100% !important;
             }
-            .stApp div[data-testid="stMetric"] div[data-testid="stMetricLabel"],
-            .stApp div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+            html body div[data-testid="stMetric"] div[data-testid="stMetricLabel"],
+            html body div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
                 display: flex !important;
                 justify-content: center !important;
                 width: 100% !important;
@@ -228,17 +231,17 @@ def inject_premium_dark_theme():
             }
 
             @media (max-width: 768px) {
-                .stApp, .app-header, .stMarkdown, .stSubheader, .stTitle, h1, h2, h3, p, label {
+                html body .stApp, .app-header, .stMarkdown, .stSubheader, .stTitle, h1, h2, h3, p, label {
                     text-align: center !important;
                 }
                 
                 /* Ne s'applique pas au bloc contenant les cotes d'équipes */
-                div[data-testid="stHorizontalBlock"]:not(:has(.st-key-home_odds)) {
+                html body div[data-testid="stHorizontalBlock"]:not(:has(.st-key-home_odds)) {
                     flex-direction: column !important;
                     gap: 16px !important;
                 }
-                div[data-testid="column"]:not(:has(.st-key-home_odds) div[data-testid="column"]),
-                div[data-testid="stColumn"]:not(:has(.st-key-home_odds) div[data-testid="stColumn"]) {
+                html body div[data-testid="column"]:not(:has(.st-key-home_odds) div[data-testid="column"]),
+                html body div[data-testid="stColumn"]:not(:has(.st-key-home_odds) div[data-testid="stColumn"]) {
                     width: 100% !important;
                     max-width: 100% !important;
                     flex-basis: 100% !important;
@@ -248,8 +251,8 @@ def inject_premium_dark_theme():
                     text-align: center !important;
                 }
                 
-                /* --- CORRECTION SUCCÈS : Force le maintien côte à côte de la ligne d'inputs --- */
-                .stApp div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) {
+                /* --- FORCE LE MOTEUR DU CLOUD À GARDER LE CÔTÉ À CÔTÉ SUR MOBILE --- */
+                html body div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) {
                     display: flex !important;
                     flex-direction: row !important;
                     flex-wrap: nowrap !important;
@@ -257,13 +260,15 @@ def inject_premium_dark_theme():
                     width: 100% !important;
                 }
                 
-                .stApp div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) div[data-testid="stColumn"],
-                .stApp div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) div[data-testid="column"] {
+                html body div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) div[data-testid="stColumn"],
+                html body div[data-testid="stHorizontalBlock"]:has(.st-key-home_odds) div[data-testid="column"] {
                     width: 50% !important;
                     flex-basis: 50% !important;
                     max-width: 50% !important;
                     min-width: 0 !important;
-                    display: block !important;
+                    display: flex !important;
+                    flex-direction: column !important;
+                    gap: 8px !important;
                 }
                 
                 div[data-testid="stSelectbox"], div[data-testid="stNumberInput"], div[data-testid="stSlider"], .stButton {
