@@ -1,13 +1,9 @@
 .env
-archive/Games.csv
-archive/LeagueSchedule24_25.csv
-archive/LeagueSchedule25_26.csv
-archive/Players.csv
-archive/PlayerStatistics.csv
-archive/PlayerStatisticsExtended.csv
-archive/TeamHistories.csv
+archive/
 nba_master_dataset.csv
 main.py
 generate_data.py
 test_model.py
 .idea/
+prepare_data.py
+__pycache__

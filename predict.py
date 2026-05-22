@@ -9,6 +9,22 @@ import streamlit as st
 
 st.set_page_config(page_title="NBA AI Predictor & Bankroll Management", layout="centered")
 
+@st.cache_data(ttl=3600)
+def fetch_recent_completed_games(api_key, start_date):
+    if not api_key:
+        return []
+    url = "https://api.balldontlie.io/v1/games"
+    headers = {"Authorization": api_key}
+    end_date = datetime.date.today().isoformat()
+    params = {"start_date": start_date, "end_date": end_date, "per_page": 100}
+    try:
+        r = requests.get(url, headers=headers, params=params)
+        if r.status_code == 200:
+            return [g for g in r.json().get("data", []) if g.get("status") == "Final"]
+    except:
+        pass
+    return []
+
 @st.cache_resource
 def load_prediction_resources():
     model = joblib.load("nba_model.pkl")
@@ -17,12 +33,21 @@ def load_prediction_resources():
         'fieldGoalsPercentage', 'threePointersPercentage', 'freeThrowsPercentage',
         'offensiveRating', 'defensiveRating', 'netRating', 'pace', 'possessions'
     ]
-    team_stats = pd.read_csv("archive/TeamStatistics.csv")
-    team_stats_ext = pd.read_csv("archive/TeamStatisticsExtended.csv")
-    overlap_cols = [c for c in team_stats_ext.columns if c in team_stats.columns and c not in ["gameId", "teamId"]]
-    team_stats_ext_clean = team_stats_ext.drop(columns=overlap_cols)
-    df = pd.merge(team_stats, team_stats_ext_clean, on=["gameId", "teamId"], how="inner")
+    
+    df = pd.read_csv("nba_production_data.csv")
     df['gameDate'] = pd.to_datetime(df['gameDate'])
+    
+    api_key = st.secrets.get("CLE_API_BALLDONTLIE")
+    last_db_date = df['gameDate'].max().strftime('%Y-%m-%d')
+    recent_games = fetch_recent_completed_games(api_key, last_db_date)
+    
+    if recent_games:
+        new_rows = []
+        for g in recent_games:
+            pass 
+        if new_rows:
+            df = pd.concat([df, pd.DataFrame(new_rows)], axis=0, ignore_index=True)
+    
     df = df.sort_values(by='gameDate').reset_index(drop=True)
     new_cols = {}
     for col in stats_list:
@@ -31,6 +56,7 @@ def load_prediction_resources():
         )
     new_cols['seasonWins_prematch'] = df.groupby('teamId')['seasonWins'].shift(1).fillna(0)
     new_cols['seasonLosses_prematch'] = df.groupby('teamId')['seasonLosses'].shift(1).fillna(0)
+    
     df = pd.concat([df, pd.DataFrame(new_cols)], axis=1)
     return model, df, stats_list
 
