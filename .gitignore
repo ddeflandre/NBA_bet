@@ -9,4 +9,36 @@ prepare_data.py
 __pycache__
 config.toml
 .devcontainer/
-nba_mobile/
+
+# --- COUCHE FLUTTER (APPLIQUÉE À NBA_MOBILE) ---
+**/build/
+**/.dart_tool/
+**/.flutter-plugins
+**/.flutter-plugins-dependencies
+**/.packages
+**/.pub-cache/
+**/.pub/
+
+# Spécifique Android
+**/.gradle/
+**/android/**/local.properties
+**/android/**/*.keystore
+**/android/**/*.jks
+**/android/**/*.apk
+**/android/**/*.aab
+**/android/**/generated/
+
+# Spécifique iOS
+**/ios/.generated/
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/Pods/
+**/.symlinks/
+
+# Fichiers systèmes et logs
+**/.DS_Store
+**/*.log
+**/xcuserdata/
