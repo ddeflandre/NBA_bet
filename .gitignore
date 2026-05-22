@@ -1,0 +1,7 @@
+.env
+archive/
+nba_master_dataset.csv
+main.py
+generate_data.py
+test_model.py
+.idea/

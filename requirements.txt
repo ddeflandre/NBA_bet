@@ -1,0 +1,9 @@
+# Dépendances utilisées par l'application Streamlit et les scripts associés
+numpy
+pandas
+xgboost
+scikit-learn
+joblib
+streamlit
+requests
+python-dotenv
