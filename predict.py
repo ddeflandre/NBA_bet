@@ -6,9 +6,6 @@ import requests
 import pandas as pd
 import numpy as np
 import streamlit as st
-from dotenv import load_dotenv
-
-load_dotenv()
 
 st.set_page_config(page_title="NBA AI Predictor & Bankroll Management", layout="centered")
 
@@ -61,7 +58,7 @@ def get_team_features(team_name):
     return features
 
 def fetch_upcoming_games():
-    api_key = os.getenv("CLE_API_BALLDONTLIE")
+    api_key = st.secrets.get("CLE_API_BALLDONTLIE")
     if not api_key:
         return []
     url = "https://api.balldontlie.io/v1/games"
